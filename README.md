@@ -19,9 +19,10 @@ Replace `claude` with `codex`, `hermes` or `openclaw`, then restart the client.
 
 - Run it yourself in a terminal: it asks for the key and does not show it on
   screen.
-- Run by an AI agent, or with `--agent`: it prints a link. Open it, paste your
-  key, done. The link works for 15 minutes; if it expired, run the command
-  again. If the link does not open, run the command yourself in a terminal.
+- Run by an AI agent, or with `--agent`: the command prints a link and
+  finishes. Open the link, paste your key, and the page confirms the
+  connection. The link works for 15 minutes; if it expired or does not open,
+  run the command yourself in a terminal.
 - An existing `HEYANON_API_KEY` environment variable is used directly.
 - Hermes/OpenClaw never ask for a key; see below.
 

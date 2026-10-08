@@ -91,15 +91,33 @@ test('discovery failure or a rejected key leaves the configuration and skill unt
   }
 });
 
-test('without a terminal the local key page is used automatically and an empty environment key is ignored', async (t) => {
+test('without a terminal the installer hands out a detached key page and writes nothing itself', async (t) => {
   const homeDir = await home(t);
-  let pages = 0;
+  const pages = [];
+  let printed = '';
   const options = {
-    homeDir, env: { HEYANON_API_KEY: '' }, input: { isTTY: false }, output: { write() {} },
-    probe: async () => ({ toolCount: 22 }), browser: async () => { pages++; return 'page-test-key'; },
+    homeDir, env: { HEYANON_API_KEY: '' }, input: { isTTY: false }, output: { write(text) { printed += text; } },
+    probe: async () => { assert.fail('No probe before the key'); }, browser: async () => { assert.fail('No in-process page'); },
+    page: async (client, out) => { pages.push(client); out.write('LINK-LINE\n'); },
   };
   await run(['install', 'codex'], options);
-  assert.equal(pages, 1);
+  assert.deepEqual(pages, ['codex']);
+  assert.match(printed, /LINK-LINE/);
+  await assert.rejects(readFile(join(homeDir, '.codex/config.toml')), { code: 'ENOENT' });
+  await assert.rejects(readFile(join(skillPath('codex', homeDir), 'SKILL.md')), { code: 'ENOENT' });
+});
+
+test('the serving process completes the setup from the page and returns the summary to it', async (t) => {
+  const homeDir = await home(t);
+  let summary;
+  const options = {
+    homeDir, env: { HEYANON_API_KEY: '' }, input: { isTTY: false }, output: { write() {} },
+    probe: async () => ({ toolCount: 22, keyVerified: true }),
+    browser: async ({ submit, onUrl }) => { assert.equal(typeof onUrl, 'function'); summary = await submit('page-test-key'); return summary; },
+  };
+  await run(['install', 'codex', '--serve'], options);
+  assert.match(summary, /API key accepted/);
+  assert.match(summary, /codex: saved/);
   assert.equal((await readConfig('codex', options)).entry.http_headers['X-API-Key'], 'page-test-key');
 });
 

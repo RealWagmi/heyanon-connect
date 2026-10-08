@@ -57,9 +57,9 @@ test('agent mode obtains a key through the browser adapter and supports installe
   const options = await fixture(t);
   let called = 0;
   options.env = {};
-  options.browser = async () => { called++; return 'browser-test'; };
-  await run(['install', 'codex', '--agent'], options);
-  await run(['install', 'codex', '--agent'], options);
+  options.browser = async ({ submit }) => { called++; return submit('browser-test'); };
+  await run(['install', 'codex', '--serve'], options);
+  await run(['install', 'codex', '--serve'], options);
   assert.equal(called, 2);
   assert.equal((await readConfig('codex', options)).entry.http_headers['X-API-Key'], 'browser-test');
 });

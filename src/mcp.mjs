@@ -136,7 +136,7 @@ export async function checkConnection(apiKey, options = {}) {
       try { reply = await send('tools/call', { name: 'wallet_list', arguments: {} }); }
       catch { result.keyVerified = false; return result; }
       // The server reports the backend status on its own line; a body may mention other codes.
-      if (reply.isError && /^Status: 40[13]$/m.test(replyText(reply))) throw new Error('HeyAnon rejected this API key. Get your key at https://heyanon.ai/ and run setup again.');
+      if (reply.isError && /^Status: 40[13]$/m.test(replyText(reply))) throw Object.assign(new Error('HeyAnon rejected this API key. Get your key at https://heyanon.ai/ and run setup again.'), { rejected: true });
       result.keyVerified = !reply.isError;
     }
     return result;

@@ -154,6 +154,7 @@ test('invalid Claude permissions fail before key input or any change', async (t)
   const options = await fixture(t);
   options.env = {};
   options.browser = async () => { assert.fail('No secret should be requested'); };
+  options.page = async () => { assert.fail('No key page should be started'); };
   for (const original of ['INVALID PRIVATE_VALUE', '{"permissions":{"allow":"Read"}}', '{"permissions":{"ask":[null]}}']) {
     await put(settingsPath(options), original);
     await assert.rejects(run(['claude', '--agent'], options), (error) => {
@@ -209,8 +210,8 @@ test('a client write during key entry is picked up instead of failing the instal
   options.env = {};
   const path = configPath('claude', options);
   await put(path, '{"theme":"dark"}');
-  options.browser = async () => { await put(path, '{"theme":"light"}'); return 'entered-after-write'; };
-  await run(['claude'], options);
+  options.browser = async ({ submit }) => { await put(path, '{"theme":"light"}'); return submit('entered-after-write'); };
+  await run(['claude', '--serve'], options);
   const config = await readConfig('claude', options);
   assert.equal(config.data.theme, 'light');
   assert.equal(config.entry.headers['X-API-Key'], 'entered-after-write');

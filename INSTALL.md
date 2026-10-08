@@ -13,19 +13,20 @@ curl -fsSL https://raw.githubusercontent.com/RealWagmi/heyanon-connect/main/inst
 ```
 
 The script downloads the installer into a temporary directory, runs it and
-removes the download; nothing else needs to be cloned or kept. Start it as a
-background command and keep reading its output.
+removes the download; nothing else needs to be cloned or kept. Run it as a
+normal foreground command.
 
-**Codex/Claude:** the installer prints a one-time localhost link and keeps
-running for up to 15 minutes. Show the link to the user; they get their key at
-https://heyanon.ai/ and enter it on that page. If the link expires, run the
-same command again. If the user cannot open the link (this machine is remote
-or a container), ask them to run the same command without `--agent` in their
-own terminal, where it asks for the key directly; never ask for the key in
-chat. The installer checks the
-key with one read-only `wallet_list` call and saves it in the client config. If
-the summary says the key could not be verified, report that and run `check`
-later. An existing `HEYANON_API_KEY` environment variable is used instead of
+**Codex/Claude:** the command prints a one-time link and exits right away;
+a detached helper keeps the page open for 15 minutes. Give the user the link
+exactly as printed. They get their key at https://heyanon.ai/, paste it on the
+page, and the page itself checks the key with one read-only `wallet_list`
+call, saves it in the client config and shows the result ("Connected" or an
+error). Nothing is left for you to wait on. When the user confirms the page
+showed "Connected", run the `check` command below. If the link expired, run
+the install command again. If the user cannot open the link (this machine is
+remote or a container), ask them to run the same command without `--agent` in
+their own terminal, where it asks for the key directly; never ask for the key
+in chat. An existing `HEYANON_API_KEY` environment variable is used instead of
 the page. Under Codex, run the command with network and home-directory access,
 outside the sandbox.
 
