@@ -25,10 +25,13 @@ Replace `claude` with `codex`, `hermes` or `openclaw`, then restart the client.
 - An existing `HEYANON_API_KEY` environment variable is used directly.
 - Hermes/OpenClaw never ask for a key; see below.
 
-The same command with `check` or `remove` checks or removes the connection:
+The same command with `check` verifies the connection and the key; with
+`remove` it deletes the HeyAnon connection, the installed skill and the Claude
+permission rules the installer added:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/RealWagmi/heyanon-connect/main/install.sh | bash -s -- check claude
+curl -fsSL https://raw.githubusercontent.com/RealWagmi/heyanon-connect/main/install.sh | bash -s -- remove claude
 ```
 
 ## Install through your agent
