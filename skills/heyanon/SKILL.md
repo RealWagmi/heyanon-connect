@@ -15,7 +15,7 @@ no key argument. Authentication problems belong in those settings.
 - Use `wallet_list` for addresses and the `portfolio_*` readers for account data.
 - Use `projects` when protocol/network support is unclear; reuse its results.
 - Use `ask_gemma({text})` for crypto research. It returns the answer directly
-  and has its own conversation. `clear` resets Anon, not Gemma.
+  and keeps its own conversation.
 - Use `ask_anon({text, wallets})` for requested actions, automations or questions
   needing the Anon agent. It can execute transactions and returns a task ID.
   Optional attachments use `files: [{url, mimetype}]`.
@@ -24,15 +24,19 @@ Before `ask_anon`, select addresses from `wallet_list`: at least one, at most
 one per type (EVM, Solana, TON). Use the user's named or previously chosen
 wallet; if several fit and none was chosen, ask. Reuse addresses for follow-ups.
 
-Send the complete request in `text`, preserving amounts, tokens, networks,
-recipients, protocols, constraints and relevant context. Keep linked steps
-(swap then deposit the proceeds) together. Resolve missing facts through
+Anon keeps no context between messages: every `ask_anon` text starts from a
+clean slate and must be self-contained. Repeat the wallet, network, token,
+amount, recipients, protocol, constraints and earlier choices each time; a
+follow-up such as "and on Base?" will not work. Keep linked steps (swap then
+deposit the proceeds) together in one message. Resolve missing facts through
 readers/context; ask for essential unresolved choices and retain choices the
 user delegates. Do not substitute an explicitly requested provider or chain.
 Tool approval does not authorize actions beyond the user's request.
 
-Anon shares one conversation: wait for each request to finish before sending
-another, including from subagents. Do not clear its context between steps.
+Anon handles one request at a time: wait for each task to finish before
+sending another, including from subagents. If `ask_anon` answers that Anon is
+still processing, poll `background_task` for the running task (use `abort`
+only when it is really stuck), then send the message again.
 
 ## Results
 

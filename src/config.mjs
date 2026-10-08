@@ -14,7 +14,7 @@ export const KEY_REFERENCE = '${HEYANON_API_KEY}';
 // Tools that act on the account or the Anon conversation keep asking for confirmation in
 // Claude Code (ask rules). Codex needs nothing: its default approval mode follows the
 // server's tool annotations, which mark exactly these tools as not read-only.
-export const CONFIRM_TOOLS = ['ask_anon', 'abort', 'clear', 'background_task_delete', 'scheduled_task_delete'];
+export const CONFIRM_TOOLS = ['ask_anon', 'abort', 'background_task_delete', 'scheduled_task_delete'];
 const isObject = (value) => value !== null && typeof value === 'object' && !Array.isArray(value);
 const isAuthHeader = (name) => ['authorization', 'x-api-key'].includes(name.toLowerCase());
 

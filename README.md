@@ -77,8 +77,8 @@ Setup never retrieves keys or creates accounts, and it can finish before a
 framework secret exists. Do not send keys through chat or Telegram.
 
 **Permissions.** Read-only HeyAnon tools run without a prompt; `ask_anon`,
-`abort`, `clear`, `background_task_delete` and `scheduled_task_delete` keep
-asking for confirmation. Codex gets this from the server's tool annotations in
+`abort`, `background_task_delete` and `scheduled_task_delete` keep asking for
+confirmation. Codex gets this from the server's tool annotations in
 its default approval mode, so nothing is written to its config. Claude gets
 `mcp__heyanon__*` in `permissions.allow` plus an `ask` rule for each of those
 tools. Existing explicit settings, deny rules and managed policies are
@@ -100,8 +100,9 @@ portfolios, DeFi/CEX and protocol research without naming HeyAnon.
 - `ask_gemma({text})`: research; returns its answer directly.
 
 Anon requires addresses from `wallet_list`, at least one and at most one per
-wallet type. Keep related steps in one request and send requests sequentially:
-Anon shares one conversation. Gemma has a separate conversation.
+wallet type. Anon keeps no context between requests: each `ask_anon` message
+must be self-contained, and Anon handles one request at a time. Gemma keeps
+its own conversation.
 
 ## Background tasks
 

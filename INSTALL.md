@@ -43,7 +43,7 @@ Never request a key in chat, read it into context, print it or put it in
 command arguments; the HeyAnon tools take no key argument.
 
 After setup, read-only HeyAnon tools run without a prompt, while `ask_anon`,
-`abort`, `clear` and the delete tools keep asking for confirmation (Codex: via
+`abort` and the delete tools keep asking for confirmation (Codex: via
 the server's tool annotations; Claude: via installed `ask` rules). Existing
 restrictions, Claude ask/deny rules and managed policies stay in effect; do not
 change global permissions.

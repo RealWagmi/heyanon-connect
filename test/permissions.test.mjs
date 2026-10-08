@@ -84,7 +84,7 @@ test('Claude install adds the allow rule and confirmation prompts once; removal 
   assert.equal((await settings(options)).permissions.allow.filter((rule) => rule === CLAUDE_HEYANON_ALLOW).length, 1);
   // The user drops one of the installed prompts; a reinstall respects that and removal takes only the rest.
   const edited = await settings(options);
-  edited.permissions.ask = edited.permissions.ask.filter((rule) => rule !== 'mcp__heyanon__clear');
+  edited.permissions.ask = edited.permissions.ask.filter((rule) => rule !== 'mcp__heyanon__scheduled_task_delete');
   await put(settingsPath(options), edited);
   await run(['claude'], options);
   assert.deepEqual((await settings(options)).permissions.ask, edited.permissions.ask);
@@ -124,6 +124,24 @@ test('Claude upgrades a 0.4.1 install: ask rules are added once and the marker r
   assert.deepEqual(await settings(options), { permissions: { allow: ['Read'] } });
 });
 
+test('Claude drops an installer-added prompt for a tool the server no longer has', async (t) => {
+  const options = await fixture(t);
+  await run(['claude'], options);
+  // Simulate an install made when the server still had a `clear` tool.
+  const markerPath = join(skillPath('claude', options.homeDir), '.heyanon-connect.json');
+  const marker = JSON.parse(await readFile(markerPath, 'utf8'));
+  marker.claudeAskAdded = [...marker.claudeAskAdded, 'mcp__heyanon__clear'];
+  await put(markerPath, marker);
+  const current = await settings(options);
+  current.permissions.ask = [...current.permissions.ask, 'mcp__heyanon__clear'];
+  await put(settingsPath(options), current);
+  await run(['claude'], options);
+  assert.deepEqual((await settings(options)).permissions, { allow: [CLAUDE_HEYANON_ALLOW], ask: CLAUDE_HEYANON_ASK });
+  assert.deepEqual(JSON.parse(await readFile(markerPath, 'utf8')).claudeAskAdded, CLAUDE_HEYANON_ASK);
+  await run(['remove', 'claude'], options);
+  assert.deepEqual(await settings(options), {});
+});
+
 test('Claude takes over the allow rule after the user removed their own and then adds the prompts', async (t) => {
   const options = await fixture(t);
   let printed = '';
@@ -135,7 +153,7 @@ test('Claude takes over the allow rule after the user removed their own and then
   await put(settingsPath(options), { permissions: { allow: ['Read'] } });
   printed = '';
   await run(['claude'], options);
-  assert.match(printed, /confirmation prompts for ask_anon, abort, clear, background_task_delete, scheduled_task_delete/);
+  assert.match(printed, /confirmation prompts for ask_anon, abort, background_task_delete, scheduled_task_delete/);
   assert.deepEqual((await settings(options)).permissions, { allow: ['Read', CLAUDE_HEYANON_ALLOW], ask: CLAUDE_HEYANON_ASK });
   await run(['remove', 'claude'], options);
   assert.deepEqual(await settings(options), { permissions: { allow: ['Read'] } });

@@ -38,6 +38,13 @@ export async function planClaudePermissions(action, { homeDir = homedir(), previ
     data.permissions ??= {};
     if (!added.allow) data.permissions.allow = [...rules('allow'), CLAUDE_HEYANON_ALLOW];
     added.allow = true;
+    // Prompts the installer added for tools the server no longer has are dropped again.
+    const stale = added.ask.filter((rule) => !CLAUDE_HEYANON_ASK.includes(rule));
+    if (stale.length) {
+      data.permissions.ask = rules('ask').filter((rule) => !stale.includes(rule));
+      if (!data.permissions.ask.length) delete data.permissions.ask;
+      added.ask = added.ask.filter((rule) => !stale.includes(rule));
+    }
     if (previous.ask === undefined) {
       // First time with ask rules: actions keep a confirmation prompt; explicit ask/deny rules stay.
       const missing = CLAUDE_HEYANON_ASK.filter((rule) => !rules('ask').includes(rule) && !rules('deny').includes(rule));

@@ -110,7 +110,7 @@ export async function run(args, { env = process.env, homeDir, input = process.st
       if (permission.kept.length) out.write(`HeyAnon rules not added by this installer remain in ${permission.config.path}: ${permission.kept.join(', ')}.\n`);
     } else if (action === 'install' && client === 'codex') {
       out.write(config.entry?.default_tools_approval_mode === undefined
-        ? 'Codex HeyAnon tools: read-only tools run without a prompt; ask_anon, abort, clear and deletions ask for confirmation (server tool annotations, Codex default mode).\n'
+        ? `Codex HeyAnon tools: read-only tools run without a prompt; ${CONFIRM_TOOLS.join(', ')} ask for confirmation (server tool annotations, Codex default mode).\n`
         : `Codex HeyAnon tools: your default_tools_approval_mode = "${config.entry.default_tools_approval_mode}" and per-tool settings were kept.\n`);
     }
     if (action === 'remove') {
