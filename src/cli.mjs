@@ -16,8 +16,8 @@ Usage: heyanon-connect [install|check|remove] [codex|claude|hermes|openclaw] [--
   remove   Remove the HeyAnon connection and the installer-owned skill.
   --agent  Enter the key on a local browser page (automatic without a terminal).
 
-Codex/Claude: the key is saved in the client config. HeyAnon tools are
-pre-approved; these still ask for confirmation:
+Codex/Claude: the key is saved in the client config. Read-only HeyAnon tools
+run without a prompt; these still ask for confirmation:
   ${CONFIRM_TOOLS.join(', ')}
 Hermes/OpenClaw: only a HEYANON_API_KEY reference is saved; set that secret in
 the framework's own environment.
@@ -100,9 +100,9 @@ export async function run(args, { env = process.env, homeDir, input = process.st
     output.write(`Claude tool permissions: ${permission.added.allow || permission.added.ask.length ? 'installer-added HeyAnon rules removed' : 'no installer-added rules found'}.\n`);
     if (permission.kept.length) output.write(`HeyAnon rules not added by this installer remain in ${permission.config.path}: ${permission.kept.join(', ')}.\n`);
   } else if (action === 'install' && client === 'codex') {
-    const mode = config.entry?.default_tools_approval_mode ?? 'approve';
-    const prompts = CONFIRM_TOOLS.filter((tool) => (config.entry?.tools?.[tool]?.approval_mode ?? 'prompt') === 'prompt');
-    output.write(`Codex HeyAnon tools: default_tools_approval_mode = "${mode}"; confirmation prompts for ${prompts.join(', ') || 'none'}. Existing per-tool settings are preserved.\n`);
+    output.write(config.entry?.default_tools_approval_mode === undefined
+      ? 'Codex HeyAnon tools: read-only tools run without a prompt; ask_anon, abort, clear and deletions ask for confirmation (server tool annotations, Codex default mode).\n'
+      : `Codex HeyAnon tools: your default_tools_approval_mode = "${config.entry.default_tools_approval_mode}" and per-tool settings were kept.\n`);
   }
   if (action === 'remove') {
     output.write('Restart the client. Removing the connection does not revoke the key; the backup may still contain it.\n');

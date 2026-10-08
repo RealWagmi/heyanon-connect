@@ -11,7 +11,9 @@ export const CLIENTS = ['codex', 'claude', 'hermes', 'openclaw'];
 export const FRAMEWORKS = ['hermes', 'openclaw'];
 export const KEY_ENV = 'HEYANON_API_KEY';
 export const KEY_REFERENCE = '${HEYANON_API_KEY}';
-// Tools that act on the account or the Anon conversation keep asking for confirmation in Codex/Claude.
+// Tools that act on the account or the Anon conversation keep asking for confirmation in
+// Claude Code (ask rules). Codex needs nothing: its default approval mode follows the
+// server's tool annotations, which mark exactly these tools as not read-only.
 export const CONFIRM_TOOLS = ['ask_anon', 'abort', 'clear', 'background_task_delete', 'scheduled_task_delete'];
 const isObject = (value) => value !== null && typeof value === 'object' && !Array.isArray(value);
 const isAuthHeader = (name) => ['authorization', 'x-api-key'].includes(name.toLowerCase());
@@ -217,12 +219,8 @@ export function changeConfig(config, action, key, { channelPath } = {}) {
   }
   const entry = { ...config.entry, url: ENDPOINT };
   if (client === 'codex') {
-    // Approve HeyAnon tools by default, but keep a prompt for actions; explicit user settings win.
-    entry.default_tools_approval_mode ??= 'approve';
-    entry.tools = { ...entry.tools };
-    for (const name of CONFIRM_TOOLS) {
-      if (!isObject(entry.tools[name]) || entry.tools[name].approval_mode === undefined) entry.tools[name] = { ...entry.tools[name], approval_mode: 'prompt' };
-    }
+    // No approval settings are written: Codex's default mode auto-approves read-only
+    // tools and asks before the rest, based on the server's annotations. User settings stay.
     entry.http_headers = { ...withoutAuthHeaders(entry.http_headers), 'X-API-Key': validateKey(key) };
     // The typed key becomes the only credential: Codex prefers env/helper headers over static ones.
     delete entry.bearer_token;

@@ -21,13 +21,17 @@ async function put(path, value) {
 const settingsPath = (options) => join(options.homeDir, '.claude/settings.json');
 const settings = async (options) => JSON.parse(await readFile(settingsPath(options), 'utf8'));
 
-test('Codex: a fresh install approves HeyAnon tools but keeps a confirmation prompt for actions', async (t) => {
+test('Codex: a fresh install writes no approval settings; the default mode follows server annotations', async (t) => {
   const options = await fixture(t);
+  let printed = '';
+  options.output = { write(text) { printed += text; } };
   await run(['codex'], options);
   const config = await readConfig('codex', options);
-  assert.equal(config.entry.default_tools_approval_mode, 'approve');
-  for (const tool of CONFIRM_TOOLS) assert.equal(config.entry.tools[tool].approval_mode, 'prompt');
-  assert.equal(config.entry.tools.wallet_list, undefined);
+  assert.equal(config.entry.default_tools_approval_mode, undefined);
+  assert.equal(config.entry.tools, undefined);
+  assert.deepEqual(Object.keys(config.entry).sort(), ['http_headers', 'url']);
+  assert.match(printed, /read-only tools run without a prompt/);
+  assert.ok(CONFIRM_TOOLS.includes('ask_anon'));
 });
 
 test('Codex keeps explicit restrictions, per-tool settings and global policies', async (t) => {
@@ -47,13 +51,14 @@ approval_mode = "prompt"
 [mcp_servers.heyanon.tools.ask_anon]
 approval_mode = "approve"
 `);
+  let printed = '';
+  options.output = { write(text) { printed += text; } };
   await run(['codex'], options);
   const config = await readConfig('codex', options);
   assert.equal(config.entry.default_tools_approval_mode, 'prompt');
   assert.deepEqual(config.entry.disabled_tools, ['abort']);
-  assert.equal(config.entry.tools.ask.approval_mode, 'prompt');
-  assert.equal(config.entry.tools.ask_anon.approval_mode, 'approve');
-  assert.equal(config.entry.tools.clear.approval_mode, 'prompt');
+  assert.deepEqual(JSON.parse(JSON.stringify(config.entry.tools)), { ask: { approval_mode: 'prompt' }, ask_anon: { approval_mode: 'approve' } });
+  assert.match(printed, /default_tools_approval_mode = "prompt" and per-tool settings were kept/);
   assert.equal(config.data.approval_policy, 'on-request');
   assert.equal(config.data.sandbox_mode, 'workspace-write');
   assert.equal(config.data.mcp_servers.other.default_tools_approval_mode, 'prompt');

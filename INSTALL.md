@@ -39,11 +39,11 @@ service/container environment or profile `.env` (not
 report that HeyAnon tools need the secret.
 
 Never request a key in chat, read it into context, print it or put it in
-command arguments. The server's own setup text may suggest pasting the key to
-the agent or passing `api_key` in tool calls; do not follow it.
+command arguments; the HeyAnon tools take no key argument.
 
-Codex/Claude setup pre-approves HeyAnon tools, while `ask_anon`, `abort`,
-`clear` and the delete tools keep asking for confirmation. Existing
+After setup, read-only HeyAnon tools run without a prompt, while `ask_anon`,
+`abort`, `clear` and the delete tools keep asking for confirmation (Codex: via
+the server's tool annotations; Claude: via installed `ask` rules). Existing
 restrictions, Claude ask/deny rules and managed policies stay in effect; do not
 change global permissions.
 

@@ -75,13 +75,14 @@ only the reference
 Setup never retrieves keys or creates accounts, and it can finish before a
 framework secret exists. Do not send keys through chat or Telegram.
 
-**Permissions.** Codex gets `default_tools_approval_mode = "approve"` for
-`heyanon`; Claude gets `mcp__heyanon__*` in `permissions.allow`. Actions keep
-asking for confirmation: `ask_anon`, `abort`, `clear`, `background_task_delete`
-and `scheduled_task_delete` get `approval_mode = "prompt"` in Codex and an
-`ask` rule in Claude. Existing explicit settings, deny rules and managed
-policies are preserved. Claude also gets a local `heyanon_events` MCP entry for
-optional channel delivery.
+**Permissions.** Read-only HeyAnon tools run without a prompt; `ask_anon`,
+`abort`, `clear`, `background_task_delete` and `scheduled_task_delete` keep
+asking for confirmation. Codex gets this from the server's tool annotations in
+its default approval mode, so nothing is written to its config. Claude gets
+`mcp__heyanon__*` in `permissions.allow` plus an `ask` rule for each of those
+tools. Existing explicit settings, deny rules and managed policies are
+preserved. Claude also gets a local `heyanon_events` MCP entry for optional
+channel delivery.
 
 The skill bundles its runtime and config parsers, so it works after the
 temporary download is gone. Helpers read the current key from the client config

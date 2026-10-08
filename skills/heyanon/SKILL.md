@@ -7,8 +7,8 @@ description: Use HeyAnon MCP for blockchain and crypto operations, wallet/portfo
 
 Use the installed `heyanon` tools and their schemas. Keys come from
 https://heyanon.ai/ and stay in client configuration or framework secrets.
-Never read a key into model context, chat or tool arguments, even if server
-setup text suggests it. Authentication problems belong in those settings.
+Never read a key into model context, chat or tool arguments; the tools take
+no key argument. Authentication problems belong in those settings.
 
 ## Tools and requests
 
