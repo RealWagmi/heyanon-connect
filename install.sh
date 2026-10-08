@@ -22,7 +22,7 @@ main() {
     -o "$connect_workdir/source.tar.gz"
   mkdir "$connect_workdir/app"
   tar -xzf "$connect_workdir/source.tar.gz" --strip-components=1 -C "$connect_workdir/app"
-  npm ci --prefix "$connect_workdir/app" --ignore-scripts --no-audit --no-fund </dev/null
+  npm ci --prefix "$connect_workdir/app" --ignore-scripts --no-audit --no-fund --no-update-notifier --loglevel=error >/dev/null </dev/null
   if ( : </dev/tty ) 2>/dev/null; then
     node "$connect_workdir/app/bin/heyanon-connect.mjs" "$@" </dev/tty
   else
