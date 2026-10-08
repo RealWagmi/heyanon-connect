@@ -37,7 +37,7 @@ curl -fsSL https://raw.githubusercontent.com/RealWagmi/heyanon-connect/main/inst
 ## Install through your agent
 
 > Read https://github.com/RealWagmi/heyanon-connect/blob/main/INSTALL.md and
-> install HeyAnon MCP and its skill for this client. Never ask for my key in chat.
+> install HeyAnon MCP and its skill for this client.
 
 The agent runs the command above with `--agent`, shows you the local key page
 and waits while you enter the key there. For Hermes or OpenClaw add: "Use the
@@ -46,12 +46,12 @@ framework settings myself."
 
 ## What gets installed
 
-| Client | MCP configuration | Skill and helpers |
-| --- | --- | --- |
-| Codex | `~/.codex/config.toml` | `~/.agents/skills/heyanon/` |
-| Claude Code | `~/.claude.json` | `~/.claude/skills/heyanon/` |
-| Hermes | `~/.hermes/config.yaml` | `~/.hermes/skills/heyanon/` |
-| OpenClaw | `~/.openclaw/openclaw.json` | `~/.openclaw/skills/heyanon/` |
+| Client      | MCP configuration           | Skill and helpers             |
+| ----------- | --------------------------- | ----------------------------- |
+| Codex       | `~/.codex/config.toml`      | `~/.agents/skills/heyanon/`   |
+| Claude Code | `~/.claude.json`            | `~/.claude/skills/heyanon/`   |
+| Hermes      | `~/.hermes/config.yaml`     | `~/.hermes/skills/heyanon/`   |
+| OpenClaw    | `~/.openclaw/openclaw.json` | `~/.openclaw/skills/heyanon/` |
 
 Codex respects `CODEX_HOME`; Hermes respects `HERMES_HOME`. OpenClaw respects
 `OPENCLAW_HOME`, `OPENCLAW_PROFILE`, `OPENCLAW_STATE_DIR` and
