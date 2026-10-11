@@ -39,11 +39,44 @@ service/container environment or profile `.env` (not
 `skills.entries.heyanon.apiKey`). Setup can finish before the secret exists;
 report that HeyAnon tools need the secret.
 
+**Grok Bot:** `install.sh` has no Grok Bot target; the Bot sets itself up with
+its own tools, in the owner's personal chat (a Command server that needs a
+secret runs only there). The MCP URL is the `ENDPOINT` value in
+[src/config.mjs](https://raw.githubusercontent.com/RealWagmi/heyanon-connect/main/src/config.mjs)
+of this repository, the same address the installer uses; read it from there.
+
+1. Ask for the key through the Bot's secure secret request, named
+   `HEYANON_API_KEY`, never in chat. The Bot keeps only the secret's name.
+2. Remote connector headers are static values, so the key must not go there.
+   Add a Command (stdio) connector named `heyanon` that receives the
+   `HEYANON_API_KEY` environment variable from that secret and runs:
+
+   ```bash
+   npx -y mcp-remote@0.14.3 MCP_URL --transport http-only --header "X-API-Key:${HEYANON_API_KEY}"
+   ```
+
+   Replace `MCP_URL` with the `ENDPOINT` value. `mcp-remote` substitutes
+   `${HEYANON_API_KEY}` from its own environment, so the key never appears in
+   the command line; keep the package version pinned.
+3. Save a Bot skill named `heyanon` with the text of
+   [skills/heyanon/SKILL.md](https://raw.githubusercontent.com/RealWagmi/heyanon-connect/main/skills/heyanon/SKILL.md)
+   without its "Waiting and subagents" section: there is no helper script, poll
+   the connected `background_task` tool instead.
+4. Grok Bot does not read tool annotations, so state in the connector or skill
+   instructions that `ask_anon`, `transfer_native`, `transfer_asset`, `abort`,
+   `background_task_delete` and `scheduled_task_delete` need the user's
+   confirmation first.
+5. Verify with one `wallet_list` call; no restart is needed.
+
+In a Team Bot a Command server cannot use secrets; the only option there is a
+Remote HTTPS connector whose `X-API-Key` header the owner enters in the
+connector settings themselves.
+
 Never request a key in chat, read it into context, print it or put it in
 command arguments; the HeyAnon tools take no key argument.
 
 After setup, read-only HeyAnon tools run without a prompt, while `ask_anon`,
-`abort` and the delete tools keep asking for confirmation (Codex: via
+the transfer tools, `abort` and the delete tools keep asking for confirmation (Codex: via
 the server's tool annotations; Claude: via installed `ask` rules). Existing
 restrictions, Claude ask/deny rules and managed policies stay in effect; do not
 change global permissions.

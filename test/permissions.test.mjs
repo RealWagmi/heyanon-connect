@@ -153,7 +153,7 @@ test('Claude takes over the allow rule after the user removed their own and then
   await put(settingsPath(options), { permissions: { allow: ['Read'] } });
   printed = '';
   await run(['claude'], options);
-  assert.match(printed, /confirmation prompts for ask_anon, abort, background_task_delete, scheduled_task_delete/);
+  assert.match(printed, new RegExp(`confirmation prompts for ${CONFIRM_TOOLS.join(', ')}`));
   assert.deepEqual((await settings(options)).permissions, { allow: ['Read', CLAUDE_HEYANON_ALLOW], ask: CLAUDE_HEYANON_ASK });
   await run(['remove', 'claude'], options);
   assert.deepEqual(await settings(options), { permissions: { allow: ['Read'] } });

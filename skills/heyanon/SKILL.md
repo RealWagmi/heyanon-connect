@@ -19,10 +19,17 @@ no key argument. Authentication problems belong in those settings.
 - Use `ask_anon({text, wallets})` for requested actions, automations or questions
   needing the Anon agent. It can execute transactions and returns a task ID.
   Optional attachments use `files: [{url, mimetype}]`.
+- Use `transfer_native` or `transfer_asset` only for a plain send the user spelled
+  out completely: network, sending wallet, recipient, asset and exact amount
+  (an integer string in the smallest unit). Resolve a named contact with
+  `address_book_list` and confirm the address with the user first. Swaps,
+  bridging, staking and automations go through `ask_anon`.
 
 Before `ask_anon`, select addresses from `wallet_list`: at least one, at most
-one per type (EVM, Solana, TON). Use the user's named or previously chosen
-wallet; if several fit and none was chosen, ask. Reuse addresses for follow-ups.
+one per type (EVM, Solana, TON). Match the wallet the user names by display
+name, label or address, skip archived wallets, and use a previously chosen
+wallet when there is one; if several fit and none was chosen, ask. Reuse
+addresses for follow-ups.
 
 Anon keeps no context between messages: every `ask_anon` text starts from a
 clean slate and must be self-contained. Repeat the wallet, network, token,
@@ -73,6 +80,8 @@ On Hermes/OpenClaw, the worker needs the same profile and injected
 `HEYANON_API_KEY`. If unavailable, or tool filters apply, use the host's connected
 `background_task` tool. Do not copy secrets into worker instructions or bypass
 host permissions. Telegram delivery uses the host's normal worker completion.
+On Grok Bot there is no helper script: poll the connected `background_task`
+tool yourself, or give a background worker the existing task ID to poll it.
 
 A watcher timeout/error or stopping it does not cancel the backend task; resume
 reading the same ID. Do not use account-wide `abort` or `isProcessing` for one

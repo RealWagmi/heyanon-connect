@@ -1,8 +1,8 @@
 # HeyAnon Connect
 
 Connect Codex, Claude Code, Hermes or OpenClaw to the HeyAnon MCP server and
-install the HeyAnon skill with its background-task helper. Get your API key at
-https://heyanon.ai/.
+install the HeyAnon skill with its background-task helper. Grok Bot sets
+itself up from the same instructions. Get your API key at https://heyanon.ai/.
 
 ## Quick start
 
@@ -40,10 +40,12 @@ curl -fsSL https://raw.githubusercontent.com/RealWagmi/heyanon-connect/main/inst
 > Read https://github.com/RealWagmi/heyanon-connect/blob/main/INSTALL.md and
 > install HeyAnon MCP and its skill for this client.
 
-The agent runs the command above with `--agent`, shows you the local key page
-and waits while you enter the key there. For Hermes or OpenClaw add: "Use the
-HEYANON_API_KEY environment reference; I will configure the secret in the
-framework settings myself."
+The agent runs the command above with `--agent` and shows you the local key
+page. For Hermes or OpenClaw add: "Use the HEYANON_API_KEY environment
+reference; I will configure the secret in the framework settings myself."
+Grok Bot runs no installer: given the same prompt, it asks for the key through
+its secure secret request and creates a `heyanon` connector and a Bot skill
+itself, as described in INSTALL.md.
 
 ## What gets installed
 
@@ -53,6 +55,7 @@ framework settings myself."
 | Claude Code | `~/.claude.json`            | `~/.claude/skills/heyanon/`   |
 | Hermes      | `~/.hermes/config.yaml`     | `~/.hermes/skills/heyanon/`   |
 | OpenClaw    | `~/.openclaw/openclaw.json` | `~/.openclaw/skills/heyanon/` |
+| Grok Bot    | Command connector `heyanon` (`mcp-remote` bridge) | Bot skill from `SKILL.md` |
 
 Codex respects `CODEX_HOME`; Hermes respects `HERMES_HOME`. OpenClaw respects
 `OPENCLAW_HOME`, `OPENCLAW_PROFILE`, `OPENCLAW_STATE_DIR` and
@@ -77,8 +80,8 @@ Setup never retrieves keys or creates accounts, and it can finish before a
 framework secret exists. Do not send keys through chat or Telegram.
 
 **Permissions.** Read-only HeyAnon tools run without a prompt; `ask_anon`,
-`abort`, `background_task_delete` and `scheduled_task_delete` keep asking for
-confirmation. Codex gets this from the server's tool annotations in
+`transfer_native`, `transfer_asset`, `abort`, `background_task_delete` and
+`scheduled_task_delete` keep asking for confirmation. Codex gets this from the server's tool annotations in
 its default approval mode, so nothing is written to its config. Claude gets
 `mcp__heyanon__*` in `permissions.allow` plus an `ask` rule for each of those
 tools. Existing explicit settings, deny rules and managed policies are
@@ -97,6 +100,8 @@ portfolios, DeFi/CEX and protocol research without naming HeyAnon.
 - `wallet_list` and `portfolio_*`: direct account readers.
 - `projects`: supported protocols and networks.
 - `ask_anon({text, wallets})`: actions and automations; returns a background task ID.
+- `transfer_native` and `transfer_asset`: plain sends the user spelled out completely;
+  `address_book_list` resolves saved recipients.
 - `ask_gemma({text})`: research; returns its answer directly.
 
 Anon requires addresses from `wallet_list`, at least one and at most one per
