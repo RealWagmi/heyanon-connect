@@ -6,7 +6,7 @@ import { parse, stringify } from 'smol-toml';
 import JSON5 from 'json5';
 import YAML, { isAlias, isMap, visit } from 'yaml';
 
-export const ENDPOINT = 'https://dev.api.heyanon.ai/mcp';
+export const ENDPOINT = 'https://api.heyanon.ai/mcp';
 export const CLIENTS = ['codex', 'claude', 'hermes', 'openclaw'];
 export const FRAMEWORKS = ['hermes', 'openclaw'];
 export const KEY_ENV = 'HEYANON_API_KEY';
@@ -105,8 +105,8 @@ export async function readConfigAt(client, path) {
 
 export function assertHeyAnonEntry(entry) {
   if (entry === undefined) return;
-  // Recognize existing HeyAnon connections so reinstall can update their URL.
-  if (!isObject(entry) || typeof entry.url !== 'string' || (entry.url !== ENDPOINT && !/^https:\/\/(?:dev\.)?api\.heyanon\.ai\/mcp$/.test(entry.url)) || entry.command !== undefined) {
+  // Recognize existing HeyAnon connections (any HeyAnon API host) so reinstall can update their URL.
+  if (!isObject(entry) || typeof entry.url !== 'string' || (entry.url !== ENDPOINT && !/^https:\/\/(?:[a-z0-9-]+\.)?api\.heyanon\.ai\/mcp$/.test(entry.url)) || entry.command !== undefined) {
     throw new Error('The name "heyanon" is already used by a different connection. Rename that entry before continuing.');
   }
   // Shape problems surface here, before any key is requested.

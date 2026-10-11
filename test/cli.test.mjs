@@ -36,7 +36,8 @@ for (const client of CLIENTS) test(`${client}: install and reinstall use the fix
   assert.deepEqual(seen, [ENDPOINT, ENDPOINT, ENDPOINT]);
 
   const installed = await readConfig(client, options);
-  const previousEndpoint = ['https://api.heyanon.ai/mcp', 'https://dev.api.heyanon.ai/mcp'].find((url) => url !== ENDPOINT);
+  // A made-up HeyAnon host: an entry pointing elsewhere is recognised and migrated to ENDPOINT.
+  const previousEndpoint = 'https://old.api.heyanon.ai/mcp';
   await saveConfig(installed, installed.text.replace(ENDPOINT, previousEndpoint));
   await assert.rejects(run(['check', client], options), /Run install/);
   assert.equal(seen.length, 3);

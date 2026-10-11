@@ -20,7 +20,8 @@ test('discovery and session cleanup use the fixed endpoint; other credential des
   assert.equal(result.toolCount, 3);
   assert.equal(result.keyVerified, undefined);
   assert.equal(seen.at(-1), 'DELETE');
-  for (const endpoint of ['https://api.heyanon.ai/mcp', 'https://dev.api.heyanon.ai/mcp', 'https://other.example/mcp'].filter((url) => url !== ENDPOINT)) {
+  // Made-up hosts: the key may only ever be sent to ENDPOINT, whatever a config says.
+  for (const endpoint of ['https://old.api.heyanon.ai/mcp', 'https://other.example/mcp']) {
     await assert.rejects(checkConnection('test-private-key', { endpoint, fetchImpl: async () => { assert.fail('Must not send credentials'); } }), /Run install/);
   }
 });
